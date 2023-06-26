@@ -109,6 +109,7 @@ while running:
     
     screen.blit(background, (0,0))
 
+
     pygame.display.set_icon(icon)
 
     draw()
