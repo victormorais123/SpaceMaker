@@ -1,7 +1,4 @@
-This project is made by Victor André Gopinger de Morais and André Izolani Rien
+Nomes:
+André Izolani Rien (RA 1135371) e Victor André Gopinger de Morais (RA 1134929)
 
-We will bring to you a new discovery, a new vision about space and stars.
-
-We are ATITUS.
-
-
+.exe download link:

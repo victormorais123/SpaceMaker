@@ -1,6 +1,0 @@
-nome: JOAO, posição: (645, 151)
-nome: MARIZINHA, posição: (432, 356)
-nome: KARALHO, posição: (776, 404)
-nome: VITOR, posição: (822, 134)
-nome: UUU, posição: (389, 156)
-nome: KOAKAOKA, posição: (214, 381)
