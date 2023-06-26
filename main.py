@@ -1,16 +1,21 @@
 #main imports
 import pygame 
-from tkinter import simpledialog
-from func import *
+import tkinter as tk
+from tkinter import filedialog, simpledialog
+import json
 
 #main vars
 pygame.init()
-running = True
-length = (1000, 563)
+
+
+WIDTH, HEIGHT = 1000, 563
+WHITE = (255, 255, 255)
 background = pygame.image.load("images/bg.jpg")
 icon = pygame.image.load("images/space.png")
-clock = pygame.time.Clock()
-screen = pygame.display.set_mode(length) #moving the screen to the middle
+
+# Configurações da caixa de diálogo
+root = tk.Tk()
+root.withdraw()
 
 pygame.mixer.music.load("sounds/Space_Machine_Power.mp3")
 pygame.mixer.music.play(-1)
@@ -20,6 +25,10 @@ pygame.mixer.Sound.play(sound)
 # Fonte
 font = pygame.font.SysFont(None, 20)
 
+# Criação da janela
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Space Marker")
+
 estrelas = {}
 
 # Função para desenhar as estrelas e as linhas
@@ -28,7 +37,6 @@ def draw():
     icon = pygame.image.load("images/space.png")
     screen.blit(background, (0,0))
     pygame.display.set_icon(icon)
-
 
     # Desenha as estrelas
     for nome, pos in estrelas.items():
@@ -57,35 +65,28 @@ def draw():
 
     pygame.display.flip()  # Atualiza a tela
 
+# Função para salvar os pontos em um arquivo
+def save_points():
+    filename = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+    if filename:
+        with open(filename, "w") as file:
+            for nome, pos in estrelas.items():
+                file.write(f"nome: {nome}, posição: {pos}\n")
 
-def draw_lines():
-    pontos = list(estrelas.values())
-    if len(pontos) >= 2:
-        pygame.draw.lines(screen, (255, 255, 255), False, pontos, 2)
-
-
-def save_stars():
-    archive = open("stars.txt", "w")
-    for nome, pos in estrelas.items():
-        linha = f"nome: {nome}, posição: {pos} \n"
-        archive.write(linha)
-    archive.close()
-
-
-fonte_texto = pygame.font.Font(None, 20)
-texto_salvar = fonte_texto.render("Pressione F9 para salvar", True, (255, 255, 255))
-pos_texto_salvar = (10, 10)
-
-
-# opção de carregamento
-texto_carregar = fonte_texto.render("Pressione F10 para carregar", True, (255, 255, 255))
-pos_texto_carregar = texto_carregar.get_rect(topleft=(10, 25))
-
-
-# limpar tela
-texto_limpar_tela = fonte_texto.render("Pressione F11 para Limpar a tela", True, (255, 255, 255))
-pos_texto_limpar_tela = texto_limpar_tela.get_rect(topleft=(10, 40))
-
+# Função para carregar os pontos de um arquivo
+def load_points():
+    filename = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+    if filename:
+        with open(filename, "r") as file:
+            estrelas.clear()
+            for line in file:
+                if line.strip():
+                    if line.startswith("nome:"):
+                        nome = line.split(":")[1].strip()
+                    elif line.startswith("posição:"):
+                        pos = tuple(map(int, line.split(":")[1].strip().split(",")))
+                        estrelas[nome] = pos
+#end functions
 
 #main
 running = True
@@ -96,35 +97,31 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
-        elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.key == pygame.K_F9:
+                save_points()
+            elif event.key == pygame.K_F10:
+                load_points()
+            elif event.key == pygame.K_F11:
+                estrelas.clear()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
+                nome = tk.simpledialog.askstring("Nome da estrela", "Digite o nome da estrela:")
+                if nome is None or nome.strip() == "":
+                    nome = "Desconhecido"
                 pos = pygame.mouse.get_pos()
-                show_dialog(pos)
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_F9:
-                save_stars()
-
-
-    for nome, pos in estrelas.items():
-        draw_star((pos, pos), nome)
-   
-    draw_lines()
-
-
-    screen.blit(texto_salvar, pos_texto_salvar)
-    screen.blit(texto_carregar, pos_texto_carregar)
-    screen.blit(texto_limpar_tela, pos_texto_limpar_tela)
-       
+                estrelas[nome] = pos
     pygame.display.update()
-
-
+   
     screen.blit(background, (0,0))
 
 
     pygame.display.set_icon(icon)
 
 
-    clock.tick(60)
-   
-pygame.quit()
+    draw()
 
+
+# Salva automaticamente os pontos antes de fechar o programa
+save_points()
+
+pygame.quit()
