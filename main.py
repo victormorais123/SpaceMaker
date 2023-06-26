@@ -3,7 +3,6 @@ import pygame
 from tkinter import simpledialog
 from func import *
 
-
 #main vars
 pygame.init()
 running = True
@@ -18,22 +17,45 @@ pygame.mixer.music.play(-1)
 sound = pygame.mixer.Sound("sounds/Space_Machine_Power.mp3")
 pygame.mixer.Sound.play(sound)
 
-estrelas = {"nome": 'Pos'}
+# Fonte
+font = pygame.font.SysFont(None, 20)
 
-def show_dialog(pos):
-    nome = simpledialog.askstring("Space", "Nome da Estrela:")
-    if nome is None or nome.strip() == "":
-        nome = "Desconhecido"
-    estrelas[nome] = pos
+estrelas = {}
 
-def draw_star(pos, nome):
-    pygame.draw.circle(screen, (255, 255, 255), pos, 5)
-    fonte = pygame.font.Font(None, 20)
-    texto = fonte.render(nome, True, (255, 255, 255))
-    largura_texto = texto.get_width()
-    altura_texto = texto.get_height()
-    pos_texto = (round(pos[0] - largura_texto / 2), round(pos[1] - altura_texto / 2))
-    screen.blit(texto, pos_texto)
+# Função para desenhar as estrelas e as linhas
+def draw():
+    background = pygame.image.load("images/bg.jpg")
+    icon = pygame.image.load("images/space.png")
+    screen.blit(background, (0,0))
+    pygame.display.set_icon(icon)
+
+
+    # Desenha as estrelas
+    for nome, pos in estrelas.items():
+        pygame.draw.circle(screen, WHITE, pos, 5)
+        text = font.render(nome, True, WHITE)
+        screen.blit(text, (pos[0] + 10, pos[1] - 10))
+
+
+    # Desenha as linhas
+    for estrela1, pos1 in estrelas.items():
+        for estrela2, pos2 in estrelas.items():
+            if estrela1 != estrela2:
+                distancia = round(((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** 0.5)
+                pygame.draw.line(screen, WHITE, pos1, pos2)
+                text = font.render(str(distancia), True, WHITE)
+                screen.blit(text, ((pos1[0] + pos2[0]) // 2, (pos1[1] + pos2[1]) // 2))
+
+
+    # Desenha os textos adicionais
+    text = font.render("Pressione F9 para salvar", True, WHITE)
+    screen.blit(text, (10, 10))
+    text = font.render("Pressione F10 para carregar", True, WHITE)
+    screen.blit(text, (10, 25))
+    text = font.render("Pressione F11 para Limpar a tela", True, WHITE)
+    screen.blit(text, (10, 40))
+
+    pygame.display.flip()  # Atualiza a tela
 
 
 def draw_lines():
