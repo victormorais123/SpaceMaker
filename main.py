@@ -53,7 +53,7 @@ def draw():
     # Desenha os textos adicionais
     text = font.render("Pressione F9 para salvar", True, WHITE)
     screen.blit(text, (10, 10))
-    text = font.render("Pressione F10 para carregar (work in progress)", True, WHITE)
+    text = font.render("Pressione F10 para carregar", True, WHITE)
     screen.blit(text, (10, 25))
     text = font.render("Pressione F11 para Limpar a tela", True, WHITE)
     screen.blit(text, (10, 40))
@@ -72,15 +72,14 @@ def save_points():
 def load_points():
     filename = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
     if filename:
+        estrelas.clear()  # Limpa o dicionário de estrelas atual
         with open(filename, "r") as file:
-            estrelas.clear()
             for line in file:
-                if line.strip():
-                    if line.startswith("nome:"):
-                        nome = line.split(":")[1].strip()
-                    elif line.startswith("posição:"):
-                        pos = tuple(map(int, line.split(":")[1].strip().split(",")))
-                        estrelas[nome] = pos
+                if line.startswith("nome:"):
+                    nome = line.split("nome:")[1].split(",")[0].strip()
+                    pos_str = line.split("posição:")[1].strip()
+                    pos = tuple(map(int, pos_str.strip("()").split(",")))
+                    estrelas[nome] = pos
 
 # Loop principal do programa
 running = True

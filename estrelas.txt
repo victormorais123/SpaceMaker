@@ -1,0 +1,4 @@
+nome: a, posição: (813, 510)
+nome: b, posição: (68, 491)
+nome: c, posição: (936, 60)
+nome: d, posição: (123, 143)
